@@ -21,21 +21,23 @@ app.get('/', (req, res) => {
   res.send('🚀 Backend Cloud Mas Yudi Aktif Sempurna!');
 });
 
+// DIUBAH KE 'categories' SESUAI NAMA TABEL ASLI SUPABASE
 app.get('/api/categories', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM kategori ORDER BY name ASC');
+    const result = await pool.query('SELECT * FROM categories ORDER BY name ASC');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// DIUBAH KE 'transactions' DAN 'categories' SESUAI STRUKTUR ASLI
 app.get('/api/transactions', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT t.*, k.name AS category_name, k.type AS category_type
-      FROM transaksi t
-      LEFT JOIN kategori k ON t.category_id = k.id
+      FROM transactions t
+      LEFT JOIN categories k ON t.category_id = k.id
       ORDER BY t.date DESC, t.id DESC
     `);
     res.json(result.rows);
@@ -44,11 +46,12 @@ app.get('/api/transactions', async (req, res) => {
   }
 });
 
+// DIUBAH KE 'transactions' UNTUK PROSES SIMPAN DATA BARU
 app.post('/api/transactions', async (req, res) => {
   const { category_id, amount, description, date, payment_method } = req.body;
   try {
     const queryText = `
-      INSERT INTO transaksi (category_id, amount, description, date, payment_method)
+      INSERT INTO transactions (category_id, amount, description, date, payment_method)
       VALUES ($1, $2, $3, $4, $5) RETURNING *
     `;
     const values = [category_id, amount, description, date, payment_method];
