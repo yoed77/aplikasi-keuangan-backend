@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
 
+// SAKLAR SAKTI: Memaksa Node.js di Vercel mengizinkan sertifikat Supabase
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -18,7 +21,6 @@ app.get('/', (req, res) => {
   res.send('🚀 Backend Cloud Mas Yudi Aktif Sempurna!');
 });
 
-// SESUAI FOTO SUPABASE: Menggunakan 'name' untuk urutan alfabet
 app.get('/api/categories', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM kategori ORDER BY name ASC');
@@ -28,7 +30,6 @@ app.get('/api/categories', async (req, res) => {
   }
 });
 
-// SESUAI FOTO SUPABASE: Join menggunakan k.name dan k.type, serta t.date
 app.get('/api/transactions', async (req, res) => {
   try {
     const result = await pool.query(`
@@ -43,7 +44,6 @@ app.get('/api/transactions', async (req, res) => {
   }
 });
 
-// SESUAI FOTO SUPABASE: Input menggunakan nama kolom asli (amount, description, date, payment_method)
 app.post('/api/transactions', async (req, res) => {
   const { category_id, amount, description, date, payment_method } = req.body;
   try {
