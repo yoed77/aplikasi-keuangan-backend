@@ -3,8 +3,6 @@ const cors = require('cors');
 const { Pool } = require('pg');
 
 const app = express();
-
-// MEMBUKA PINTU AKSES PENUH AGAR FRONTEND BISA MENGAMBIL DATA
 app.use(cors());
 app.use(express.json());
 
@@ -20,22 +18,24 @@ app.get('/', (req, res) => {
   res.send('🚀 Backend Cloud Mas Yudi Aktif Sempurna!');
 });
 
+// PERBAIKAN: Menggunakan kolom 'nama_kategori' sesuai isi Supabase Mas Yudi
 app.get('/api/categories', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM kategori ORDER BY name ASC');
+    const result = await pool.query('SELECT * FROM kategori ORDER BY nama_kategori ASC');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// PERBAIKAN: Menyelaraskan join tabel sesuai struktur kolom asli database
 app.get('/api/transactions', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT t.*, k.name AS category_name, k.type AS category_type
+      SELECT t.*, k.nama_kategori AS category_name, k.jenis_transaksi AS category_type
       FROM transaksi t
       LEFT JOIN kategori k ON t.category_id = k.id
-      ORDER BY t.date DESC, t.id DESC
+      ORDER BY t.tanggal DESC, t.id DESC
     `);
     res.json(result.rows);
   } catch (err) {
@@ -47,7 +47,7 @@ app.post('/api/transactions', async (req, res) => {
   const { category_id, amount, description, date, payment_method } = req.body;
   try {
     const queryText = `
-      INSERT INTO transaksi (category_id, amount, description, date, payment_method)
+      INSERT INTO transaksi (category_id, jumlah_uang, keterangan, tanggal, metode_pembayaran)
       VALUES ($1, $2, $3, $4, $5) RETURNING *
     `;
     const values = [category_id, amount, description, date, payment_method];
@@ -63,5 +63,5 @@ app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
 });
 
-// BARIS SAKTI WAJIB UNTUK VERCEL (JANGAN SAMPAI HILANG):
+// BARIS SAKTI UNTUK VERCEL CLOUD
 module.exports = app;
