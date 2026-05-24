@@ -3,6 +3,8 @@ const cors = require('cors');
 const { Pool } = require('pg');
 
 const app = express();
+
+// MEMBUKA PINTU AKSES PENUH AGAR FRONTEND BISA MENGAMBIL DATA
 app.use(cors());
 app.use(express.json());
 
@@ -60,3 +62,6 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
 });
+
+// BARIS SAKTI WAJIB UNTUK VERCEL (JANGAN SAMPAI HILANG):
+module.exports = app;
